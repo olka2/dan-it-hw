@@ -1,0 +1,13 @@
+#Я створила user-unit, а не system через те, що в завданні вказано "~/watch", 
+#тобто домашня директорія (думаю, не рута ж, чи саме його?)
+
+[Unit]
+Description=Watch ~/watch for new files and archive them
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/10.sh
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
