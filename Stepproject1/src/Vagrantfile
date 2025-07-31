@@ -1,0 +1,19 @@
+env = Hash[File.readlines(".env").map { |l| l.strip.split("=", 2) }]
+env.each { |k, v| ENV[k] = v }
+
+Vagrant.configure("2") do |config|
+  config.vm.define "DB_VM" do |db|
+    db.vm.box = "ubuntu/focal64"
+    db.vm.hostname = "db.vm"
+    db.vm.network "private_network", ip: "192.168.56.10"
+    db.vm.provision "shell", path: "provision/db_provision.sh", env: env
+  end
+
+  config.vm.define "APP_VM" do |app|
+    app.vm.box = "ubuntu/focal64"
+    app.vm.hostname = "app.vm"
+    app.vm.network "private_network", ip: "192.168.56.11"
+    app.vm.network "forwarded_port", guest: 8080, host: 8080
+    app.vm.provision "shell", path: "provision/app_provision.sh", env: env
+  end
+end
