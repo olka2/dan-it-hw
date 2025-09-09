@@ -1,0 +1,48 @@
+
+=== 1) GET all students ===
+STATUS: 200
+[{"age":30,"first_name":"Jack","id":34,"last_name":"Clark"},{"age":16,"first_name":"Lina","id":11,"last_name":"Miller"},{"age":21,"first_name":"Alice","id":88,"last_name":"Smith"}]
+
+=== 2) POST create student ===
+STATUS: 201
+{"age":20,"first_name":"Olga","id":89,"last_name":"Pl"}
+
+=== 2) POST create student ===
+STATUS: 201
+{"age":22,"first_name":"Ivan","id":90,"last_name":"Kr"}
+
+=== 2) POST create student ===
+STATUS: 201
+{"age":19,"first_name":"Petro","id":91,"last_name":"Kv"}
+
+=== 3) GET all students ===
+STATUS: 200
+[{"age":30,"first_name":"Jack","id":34,"last_name":"Clark"},{"age":16,"first_name":"Lina","id":11,"last_name":"Miller"},{"age":21,"first_name":"Alice","id":88,"last_name":"Smith"},{"age":20,"first_name":"Olga","id":89,"last_name":"Pl"},{"age":22,"first_name":"Ivan","id":90,"last_name":"Kr"},{"age":19,"first_name":"Petro","id":91,"last_name":"Kv"}]
+
+=== 4) PATCH age of 2nd created ===
+STATUS: 200
+{"age":33,"first_name":"Ivan","id":90,"last_name":"Kr"}
+
+=== 5) GET 2nd created ===
+STATUS: 200
+{"age":33,"first_name":"Ivan","id":90,"last_name":"Kr"}
+
+=== 6) PUT update 3rd created ===
+STATUS: 200
+{"age":25,"first_name":"Petro","id":91,"last_name":"Lucky"}
+
+=== 7) GET 3rd created ===
+STATUS: 200
+{"age":25,"first_name":"Petro","id":91,"last_name":"Lucky"}
+
+=== 8) GET all students ===
+STATUS: 200
+[{"age":30,"first_name":"Jack","id":34,"last_name":"Clark"},{"age":16,"first_name":"Lina","id":11,"last_name":"Miller"},{"age":21,"first_name":"Alice","id":88,"last_name":"Smith"},{"age":20,"first_name":"Olga","id":89,"last_name":"Pl"},{"age":33,"first_name":"Ivan","id":90,"last_name":"Kr"},{"age":25,"first_name":"Petro","id":91,"last_name":"Lucky"}]
+
+=== 9) DELETE 1st created ===
+STATUS: 200
+{"message":"Student id 89 deleted successfully."}
+
+=== 10) GET all students ===
+STATUS: 200
+[{"age":30,"first_name":"Jack","id":34,"last_name":"Clark"},{"age":16,"first_name":"Lina","id":11,"last_name":"Miller"},{"age":21,"first_name":"Alice","id":88,"last_name":"Smith"},{"age":33,"first_name":"Ivan","id":90,"last_name":"Kr"},{"age":25,"first_name":"Petro","id":91,"last_name":"Lucky"}]
