@@ -1,0 +1,45 @@
+---
+- name: Install Docker and run Nginx with Docker Compose
+  hosts: webservers
+  become: yes
+  vars:
+    compose_project_dir: /opt/nginx-compose
+
+  tasks:
+    - name: Update package cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install packages (Docker + Docker Compose)
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - docker-compose
+        state: present
+
+    - name: Ensure Docker service is enabled and started
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Create directory for Docker Compose project
+      ansible.builtin.file:
+        path: "{{ compose_project_dir }}"
+        state: directory
+        owner: "{{ ansible_user | default('root') }}"
+        group: "{{ ansible_user | default('root') }}"
+        mode: "0755"
+
+    - name: Copy docker-compose.yml to remote host
+      ansible.builtin.copy:
+        src: docker-compose.yml
+        dest: "{{ compose_project_dir }}/docker-compose.yml"
+        owner: "{{ ansible_user | default('root') }}"
+        group: "{{ ansible_user | default('root') }}"
+        mode: "0644"
+
+    - name: Run Docker Compose (Nginx up)
+      ansible.builtin.command: docker-compose up -d
+      args:
+        chdir: "{{ compose_project_dir }}"
