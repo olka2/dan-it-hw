@@ -1,0 +1,100 @@
+- name: Install Jenkins and configure nginx reverse proxy
+  hosts: jenkins_master
+  become: true
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+          - fontconfig
+          - openjdk-17-jre
+        update_cache: yes
+
+    - name: Add Jenkins keyring
+      shell: |
+        curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key \
+        | tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+      args:
+        creates: /usr/share/keyrings/jenkins-keyring.asc
+
+    - name: Add Jenkins repository
+      copy:
+        dest: /etc/apt/sources.list.d/jenkins.list
+        content: |
+          deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        update_cache: yes
+
+    - name: Ensure Jenkins is running
+      systemd:
+        name: jenkins
+        enabled: yes
+        state: started
+
+    - name: Install nginx
+      apt:
+        name: nginx
+        update_cache: yes
+
+    - name: Copy nginx config for Jenkins
+      copy:
+        src: files/nginx-jenkins.conf
+        dest: /etc/nginx/sites-available/jenkins
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Enable nginx site
+      file:
+        src: /etc/nginx/sites-available/jenkins
+        dest: /etc/nginx/sites-enabled/jenkins
+        state: link
+        force: yes
+
+    - name: Disable default nginx site
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Test nginx configuration
+      command: nginx -t
+
+    - name: Restart nginx
+      systemd:
+        name: nginx
+        enabled: yes
+        state: restarted
+
+- name: Prepare Jenkins worker
+  hosts: jenkins_worker
+  become: true
+
+  tasks:
+    - name: Install Java (required for Jenkins agent)
+      apt:
+        name: openjdk-17-jre
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker.io
+        update_cache: yes
+
+    - name: Enable and start docker
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Allow ubuntu to run docker without sudo
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
